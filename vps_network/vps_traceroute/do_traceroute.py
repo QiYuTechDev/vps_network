@@ -1,10 +1,21 @@
 from time import sleep
 from typing import List, Optional
 
-from icmplib import *
+from icmplib import (
+    PID,
+    Hop,
+    resolve,
+    is_ipv6_address,
+    ICMPv4Socket,
+    ICMPv6Socket,
+    ICMPRequest,
+    TimeExceeded,
+    ICMPLibError,
+    ICMPReply,
+)
 from rich.table import Table
 
-from ip_api import get_ip_info
+from .ip_api import get_ip_info
 
 __all__ = ["do_traceroute"]
 

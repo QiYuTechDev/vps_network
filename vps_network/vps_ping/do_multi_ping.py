@@ -30,7 +30,7 @@ class PingResult(BaseModel):
 
 
 def do_one_ping(
-    address,
+    host,
     progress: Progress,
     seq_offset=0,
     count=8,
@@ -51,14 +51,15 @@ def do_one_ping(
         `ICMPv4Socket` or `ICMPv6Socket` class for details.
     """
 
-    task_id = progress.add_task(address, total=count)
+    task_id = progress.add_task(host, total=count)
 
-    address = resolve(address)
+    address = resolve(host)
 
+    # on linux `privileged` must be True
     if is_ipv6_address(address):
-        sock = ICMPv6Socket(address=source, privileged=False)
+        sock = ICMPv6Socket(address=source, privileged=True)
     else:
-        sock = ICMPv4Socket(address=source, privileged=False)
+        sock = ICMPv4Socket(address=source, privileged=True)
 
     times = []
 
@@ -90,9 +91,9 @@ def do_one_ping(
 
 
 def do_multi_ping(
-    ip: List[str], count: int = 8, interval: float = 0.01, timeout: int = 2
+    hosts: List[str], count: int = 8, interval: float = 0.01, timeout: int = 2
 ) -> List[PingResult]:
-    pool = ThreadPoolExecutor(max_workers=len(ip), thread_name_prefix="ping")
+    pool = ThreadPoolExecutor(max_workers=len(hosts), thread_name_prefix="ping")
 
     with Progress(
         "[progress.description]{task.description}",
@@ -102,11 +103,11 @@ def do_multi_ping(
         transient=True,
     ) as progress:
         jobs = []
-        for idx in range(len(ip)):
+        for idx in range(len(hosts)):
             job = pool.submit(
                 do_one_ping,
-                seq_offset=idx * len(ip) * 2,
-                address=ip[idx],
+                seq_offset=idx * len(hosts) * 2,
+                host=hosts[idx],
                 count=count,
                 interval=interval,
                 timeout=timeout,
