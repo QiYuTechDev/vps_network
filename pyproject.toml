@@ -2,8 +2,9 @@
 name = "vps_network"
 version = "0.1.0"
 description = "VPS Network Speed Test"
-homepage = "https://www.qiyutech.tech/"
+homepage = "https://vps.qiyutech.tech/"
 authors = ["dev <dev@qiyutech.tech>"]
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
