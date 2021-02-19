@@ -2,11 +2,12 @@ from typing import Optional, List
 
 import click
 
-from .do_speedtest import do_speed_test, SpeedTestResult  # noqa
+from .data_type import SpeedTestResult
+from .do_speedtest import do_speed_test
 from .get_list import get_server_list, get_cn_server_list
 from .utils import print_server_list, print_speed_test_result
 
-__all__ = ["init_speed_test_cli"]
+__all__ = ["init_speed_test_cli", "do_speed_test", "SpeedTestResult"]
 
 
 def init_speed_test_cli(main: click.Group):
@@ -84,10 +85,7 @@ def init_speed_test_cli(main: click.Group):
         """
 
         ret = do_speed_test(
-            server=server,
-            disable=disable,
-            dl_threads=dl_threads,
-            up_threads=up_threads,
+            server=server, disable=disable, dl_threads=dl_threads, up_threads=up_threads
         )
 
         print_speed_test_result(ret)

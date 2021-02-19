@@ -20,6 +20,7 @@ from .ip_api import get_ip_info
 __all__ = ["do_traceroute"]
 
 
+# noinspection PyIncorrectDocstring
 def do_traceroute(
     table: Table,
     address: str,

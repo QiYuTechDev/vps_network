@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
-from typing import List, Optional
+from typing import List
 
 from icmplib import (
     PID,
@@ -11,22 +11,11 @@ from icmplib import (
     ICMPRequest,
     ICMPLibError,
 )
-from pydantic import BaseModel, Field
 from rich.progress import Progress, BarColumn, TimeRemainingColumn
 
-__all__ = ["do_multi_ping", "PingResult"]
+from .data_type import PingResult
 
-
-class PingResult(BaseModel):
-    host: str = Field(..., title="host")
-    times: List[Optional[float]] = Field(
-        ...,
-        title="时间",
-        description="rtt(round trip time)列表, 如果没有数据: rtt = None 注意: 时间单位为 ms",
-    )
-
-    def __str__(self) -> str:
-        return f"<PingResult Host: {self.host} Times: {self.times}>"
+__all__ = ["do_multi_ping", "do_one_ping"]
 
 
 def do_one_ping(

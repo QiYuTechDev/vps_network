@@ -3,7 +3,7 @@ from typing import List
 from rich.console import Console
 from rich.table import Table
 
-from .do_speedtest import SpeedTestResult
+from .data_type import SpeedTestResult
 from .get_list import ServerInfo
 
 __all__ = ["print_server_list", "print_speed_test_result"]
