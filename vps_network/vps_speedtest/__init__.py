@@ -2,12 +2,18 @@ from typing import Optional, List
 
 import click
 
-from .data_type import SpeedTestResult
+from .data_type import SpeedTestResult, SpeedTestServer, SpeedTestClient
 from .do_speedtest import do_speed_test
 from .get_list import get_server_list, get_cn_server_list
 from .utils import print_server_list, print_speed_test_result
 
-__all__ = ["init_speed_test_cli", "do_speed_test", "SpeedTestResult"]
+__all__ = [
+    "init_speed_test_cli",
+    "do_speed_test",
+    "SpeedTestResult",
+    "SpeedTestServer",
+    "SpeedTestClient",
+]
 
 
 def init_speed_test_cli(main: click.Group):
