@@ -16,9 +16,9 @@ def main():
     pass
 
 
-from vps_network.vps_speedtest import init_speed_test_cli
+from vps_network.vps_speed import init_speed_test_cli
 from vps_network.vps_ping import init_ping_cli
-from vps_network.vps_traceroute import init_traceroute_cli
+from vps_network.vps_trace import init_traceroute_cli
 
 init_speed_test_cli(main)
 init_ping_cli(main)

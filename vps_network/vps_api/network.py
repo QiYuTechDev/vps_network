@@ -6,7 +6,7 @@ from requests import Session, Response
 
 from .dt import ServerListResp, ServerItem, ServerListForm
 from ..vps_ping import PingResult
-from ..vps_speedtest import SpeedTestResult
+from ..vps_speed import SpeedTestResult
 
 __all__ = ["NetworkApi"]
 

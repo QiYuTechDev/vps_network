@@ -3,9 +3,17 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from ..vps_ping import PingResult
-from ..vps_speedtest import SpeedTestResult
+from ..vps_speed import SpeedTestResult
+from ..vps_trace import TraceResult
 
-__all__ = ["ServerListResp", "ServerItem", "ServerListForm", "PingForm", "SpeedForm"]
+__all__ = [
+    "ServerListResp",
+    "ServerItem",
+    "ServerListForm",
+    "PingForm",
+    "SpeedForm",
+    "TraceForm",
+]
 
 
 class ServerItem(BaseModel):
@@ -41,3 +49,7 @@ class PingForm(ReportBaseForm):
 
 class SpeedForm(ReportBaseForm):
     results: List[SpeedTestResult] = Field(..., title="网络速度测试结果")
+
+
+class TraceForm(ReportBaseForm):
+    results: List[TraceResult] = Field(..., title="网络跟踪测试结果")
