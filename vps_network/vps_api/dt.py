@@ -13,6 +13,7 @@ __all__ = [
     "PingForm",
     "SpeedForm",
     "TraceForm",
+    "ReportResp",
 ]
 
 
@@ -53,3 +54,8 @@ class SpeedForm(ReportBaseForm):
 
 class TraceForm(ReportBaseForm):
     results: List[TraceResult] = Field(..., title="网络跟踪测试结果")
+
+
+class ReportResp(BaseModel):
+    errno: int = Field(..., title="错误码", description="0 表示成功,其他值表示失败")
+    errmsg: str = Field("", title="错误消息", description="当 errno 不为 0 的时候，这个字符串表示错误的原因")
