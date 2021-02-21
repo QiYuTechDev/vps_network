@@ -6,7 +6,7 @@ from requests import Session, Response
 
 from .dt import ServerListResp, ServerItem, ServerListForm
 from ..vps_ping import PingResult
-from ..vps_speed import SpeedTestResult
+from ..vps_speed import SpeedResult
 
 __all__ = ["NetworkApi"]
 
@@ -32,7 +32,7 @@ class NetworkApi(object):
     def ping_report(self, job_id: Optional[str], results: List[PingResult]):
         pass
 
-    def speed_report(self, job_id: Optional[str], results: List[SpeedTestResult]):
+    def speed_report(self, job_id: Optional[str], results: List[SpeedResult]):
         pass
 
     def trace_report(self, job_id: Optional[str], results: List[PingResult]):

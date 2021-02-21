@@ -10,7 +10,7 @@ from typing import Optional
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TaskID
 from speedtest import Speedtest
 
-from .data_type import SpeedTestResult
+from .data_type import SpeedResult
 
 __all__ = ["do_speed_test"]
 
@@ -25,7 +25,7 @@ def do_speed_test(
     disable: Optional[str] = None,
     up_threads: Optional[int] = None,
     dl_threads: Optional[int] = None,
-) -> SpeedTestResult:
+) -> SpeedResult:
     """
     进行 SpeedTest 测试
 
@@ -71,4 +71,4 @@ def do_speed_test(
 
             st.download(threads=dl_threads, callback=dl_cb)
 
-    return SpeedTestResult(**st.results.dict())
+    return SpeedResult(**st.results.dict())

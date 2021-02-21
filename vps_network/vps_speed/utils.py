@@ -3,7 +3,7 @@ from typing import List
 from rich.console import Console
 from rich.table import Table
 
-from .data_type import SpeedTestResult
+from .data_type import SpeedResult
 from .get_list import ServerInfo
 
 __all__ = ["print_server_list", "print_speed_test_result"]
@@ -33,7 +33,7 @@ def print_server_list(ret: List[ServerInfo]) -> None:
     console.print(table)
 
 
-def print_speed_test_result(ret: SpeedTestResult):
+def print_speed_test_result(ret: SpeedResult):
     console = Console()
 
     server = ret.server

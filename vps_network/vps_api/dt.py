@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from ..vps_ping import PingResult
-from ..vps_speed import SpeedTestResult
+from ..vps_speed import SpeedResult
 from ..vps_trace import TraceResult
 
 __all__ = [
@@ -48,7 +48,7 @@ class PingForm(ReportBaseForm):
 
 
 class SpeedForm(ReportBaseForm):
-    results: List[SpeedTestResult] = Field(..., title="网络速度测试结果")
+    results: List[SpeedResult] = Field(..., title="网络速度测试结果")
 
 
 class TraceForm(ReportBaseForm):
