@@ -3,13 +3,14 @@ from typing import Optional, List
 import click
 
 from .data_type import SpeedResult, SpeedServer, SpeedClient
-from .do_speedtest import do_speed_test
+from .do_speedtest import do_speed_test, do_speed_test_wrap
 from .get_list import get_server_list, get_cn_server_list
 from .utils import print_server_list, print_speed_test_result
 
 __all__ = [
     "init_speed_test_cli",
     "do_speed_test",
+    "do_speed_test_wrap",
     "SpeedResult",
     "SpeedServer",
     "SpeedClient",

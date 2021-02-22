@@ -5,8 +5,15 @@ from rich.table import Table
 
 from .data_type import TraceHop, TraceResult
 from .do_traceroute import do_traceroute
+from .do_traceroute_v2 import do_traceroute_v2, do_traceroute_v2_wrapper
 
-__all__ = ["init_traceroute_cli", "TraceHop", "TraceResult"]
+__all__ = [
+    "init_traceroute_cli",
+    "TraceHop",
+    "TraceResult",
+    "do_traceroute_v2",
+    "do_traceroute_v2_wrapper",
+]
 
 
 def init_traceroute_cli(main: click.Group):

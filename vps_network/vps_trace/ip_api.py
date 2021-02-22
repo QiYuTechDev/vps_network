@@ -1,9 +1,10 @@
+from functools import lru_cache
 from typing import Optional
 
 import requests
 from pydantic import BaseModel, Field
 
-FIELDS = "status,continent,country,countryCode,region,regionName,city,isp,query"
+FIELDS = "status,continent,country,countryCode,region,regionName,city,isp,query,lat,lon"
 
 __all__ = ["get_ip_info", "IPInfo"]
 
@@ -18,11 +19,14 @@ class IPInfo(BaseModel):
     regionName: Optional[str] = Field(None, title="区域名称")
     city: Optional[str] = Field(None, title="城市")
     isp: Optional[str] = Field(None, title="ISP")
+    lat: Optional[float] = Field(None, title="经度")
+    lon: Optional[float] = Field(None, title="纬度")
 
     def is_success(self) -> bool:
         return self.status == "success"
 
 
+@lru_cache(maxsize=255)  # add lru cache to prevent hit rate limit
 def get_ip_info(ip: str) -> Optional[IPInfo]:
     url = f"http://ip-api.com/json/{ip}?fields={FIELDS}&lang=zh-CN"
     resp: requests.Response = requests.get(url)

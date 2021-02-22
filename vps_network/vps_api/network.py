@@ -1,3 +1,4 @@
+import logging
 import platform
 from threading import Thread
 from typing import Optional, List
@@ -25,23 +26,45 @@ class NetworkApi(object):
     :doc: https://vps.qiyutech.tech/api/docs
     """
 
-    def __init__(self, app_key: Optional[str] = None, url: str = SERVER_URL):
+    def __init__(self, app_key: Optional[str] = None, url: Optional[str] = None):
         """
         :param app_key: 访问的APPKey
         :param url: 服务器URL
         """
         self._app_key: Optional[str] = app_key
-        self._url: str = url
+        self._url: str = SERVER_URL if url is None else url
         self._http: Session = Session()
+        self._log = logging.getLogger("rich")
 
-    def ping_report(self, job_id: Optional[str], results: PingForm) -> ReportResp:
-        pass
+    def ping_report(self, form: PingForm) -> Optional[ReportResp]:
+        url = f"{self._url}/ping"
+        json = form.dict()
+        return self._do_report(url, json)
 
-    def speed_report(self, job_id: Optional[str], results: SpeedForm) -> ReportResp:
-        pass
+    def speed_report(self, form: SpeedForm) -> Optional[ReportResp]:
+        url = f"{self._url}/speed"
+        json = form.dict()
+        return self._do_report(url, json)
 
-    def trace_report(self, job_id: Optional[str], results: TraceForm) -> ReportResp:
-        pass
+    def trace_report(self, form: TraceForm) -> Optional[ReportResp]:
+        url = f"{self._url}/traceroute"
+        json = form.dict()
+        return self._do_report(url, json)
+
+    def _do_report(self, url: str, json: dict) -> Optional[ReportResp]:
+        """
+        执行上报数据
+
+        :param url: 上报的URL
+        :param json: 上报的数据
+        """
+        headers = {"Authorization": f"Bearer {self._app_key}"}
+        resp = self._http.post(url, json=json, headers=headers)
+        if resp.ok:
+            self._log.info(f"上报 Ping 信息成功")
+            return ReportResp(**resp.json())
+        self._log.error(f"上报 Ping 信息失败: {resp=} {resp.content=}")
+        return None
 
     def server_list(self, form: ServerListForm) -> List[ServerItem]:
         """

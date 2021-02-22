@@ -19,10 +19,12 @@ def main():
 from vps_network.vps_speed import init_speed_test_cli
 from vps_network.vps_ping import init_ping_cli
 from vps_network.vps_trace import init_traceroute_cli
+from vps_network.vps_quick import init_quick_cli
 
 init_speed_test_cli(main)
 init_ping_cli(main)
 init_traceroute_cli(main)
+init_quick_cli(main)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

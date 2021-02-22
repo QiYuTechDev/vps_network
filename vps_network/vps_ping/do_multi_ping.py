@@ -1,6 +1,7 @@
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
-from typing import List
+from typing import List, Optional
 
 from icmplib import (
     PID,
@@ -40,9 +41,11 @@ def do_one_ping(
         `ICMPv4Socket` or `ICMPv6Socket` class for details.
     """
 
-    task_id = progress.add_task(host, total=count)
-
     address = resolve(host)
+
+    log = logging.getLogger("rich")
+
+    task_id = progress.add_task(host, total=count)
 
     # on linux `privileged` must be True
     if is_ipv6_address(address):
@@ -71,18 +74,31 @@ def do_one_ping(
             if sequence < count - 1:
                 sleep(interval)
 
-        except ICMPLibError:
-            times.append(None)
+        except ICMPLibError as e:
+            log.error(f"接受 {host} Ping 返回信息失败: {e}")
+
+    progress.remove_task(task_id=task_id)
 
     sock.close()
 
-    return PingResult(host=address, times=times)
+    log.info(f"{host} Ping 检测已经完成")
+
+    return PingResult(host=address, count=count, times=times)
+
+
+def do_one_ping_wrapper(**kwargs) -> Optional[PingResult]:
+    try:
+        return do_one_ping(**kwargs)
+    except Exception as e:
+        log = logging.getLogger("rich")
+        log.error(f"ping {kwargs.get('host')} failed: {e}")
+        return None
 
 
 def do_multi_ping(
     hosts: List[str], count: int = 8, interval: float = 0.01, timeout: int = 2
 ) -> List[PingResult]:
-    pool = ThreadPoolExecutor(max_workers=len(hosts), thread_name_prefix="ping")
+    pool = ThreadPoolExecutor(thread_name_prefix="ping")
 
     with Progress(
         "[progress.description]{task.description}",
@@ -94,7 +110,7 @@ def do_multi_ping(
         jobs = []
         for idx in range(len(hosts)):
             job = pool.submit(
-                do_one_ping,
+                do_one_ping_wrapper,
                 seq_offset=idx * len(hosts) * 2,
                 host=hosts[idx],
                 count=count,
@@ -103,7 +119,9 @@ def do_multi_ping(
                 progress=progress,
             )
             jobs.append(job)
+            sleep(0.5)  # fixme there is a deadlock in rich, need more inspect
 
-        results: List[PingResult] = list(map(lambda x: x.result(), jobs))
+        results: List[Optional[PingResult]] = list(map(lambda x: x.result(), jobs))
+        results: List[PingResult] = list(filter(lambda x: x is not None, results))
 
     return results

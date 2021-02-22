@@ -1,4 +1,5 @@
 .idea
+app_key.txt
 demo.json
 poetry.lock
 node_modules

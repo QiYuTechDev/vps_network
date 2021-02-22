@@ -5,6 +5,7 @@ github: https://github.com/sivel/speedtest-cli/wiki
 之后应该迁移到自建的 SpeedTest 工具上
 """
 
+import logging
 from typing import Optional
 
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TaskID
@@ -12,12 +13,21 @@ from speedtest import Speedtest
 
 from .data_type import SpeedResult
 
-__all__ = ["do_speed_test"]
+__all__ = ["do_speed_test", "do_speed_test_wrap"]
 
 
 def speed_test_cb(progress: Progress, task_id: TaskID, idx: int, total: int, **kwargs):
     if kwargs.get("end") is True:
         progress.update(task_id, total=total, completed=idx + 1)
+
+
+def do_speed_test_wrap(**kwargs) -> Optional[SpeedResult]:
+    try:
+        return do_speed_test(**kwargs)
+    except Exception as e:
+        log = logging.getLogger("rich")
+        log.error(f"速度测试: {kwargs.get('server')} 失败: {e}")
+        return None
 
 
 def do_speed_test(

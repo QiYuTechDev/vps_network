@@ -2,7 +2,7 @@
 pyRun:=poetry run python main.py
 
 run-ping:
-	sudo $(pyRun) ping \
+	sudo $(pyRun) ping multi \
 	    --host 1.1.1.1 \
 	    --host 8.8.8.8 \
 	    --host 114.114.114.114 \
@@ -23,3 +23,8 @@ run-traceroute:
 
 run-test:
 	sudo poetry run pytest vps_network
+
+
+run-quick:export VPS_APP_KEY=$(shell cat app_key.txt)
+run-quick:
+	sudo -E poetry run python main.py quick

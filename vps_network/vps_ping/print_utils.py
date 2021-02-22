@@ -16,10 +16,10 @@ def print_ping_results(results: List[PingResult]):
 
     table = Table(title="Ping 测试结果 (时间单位: ms)")
     table.add_column("IP", justify="right", style="cyan", no_wrap=True)
-    table.add_column("最小RTT")
-    table.add_column("最大RTT")
-    table.add_column("平均RTT")
-    table.add_column("标准差")
+    table.add_column("最小RTT", justify="right")
+    table.add_column("最大RTT", justify="right")
+    table.add_column("平均RTT", justify="right")
+    table.add_column("标准差", justify="right")
     table.add_column("失败", style="red")
     table.add_column("成功", style="green")
 
