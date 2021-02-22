@@ -4,9 +4,16 @@ from typing import Optional, List
 
 from requests import Session, Response
 
-from .dt import ServerListResp, ServerItem, ServerListForm
-from ..vps_ping import PingResult
-from ..vps_speed import SpeedResult
+from .dt import (
+    ServerListResp,
+    ServerItem,
+    ServerListForm,
+    PingForm,
+    SpeedForm,
+    TraceForm,
+    ReportResp,
+)
+from ..values import SERVER_URL
 
 __all__ = ["NetworkApi"]
 
@@ -14,13 +21,11 @@ __all__ = ["NetworkApi"]
 class NetworkApi(object):
     """
     VPS Network API
+
+    :doc: https://vps.qiyutech.tech/api/docs
     """
 
-    def __init__(
-        self,
-        app_key: Optional[str] = None,
-        url: str = "https://vps.qiyutech.tech/api/network/v1",
-    ):
+    def __init__(self, app_key: Optional[str] = None, url: str = SERVER_URL):
         """
         :param app_key: 访问的APPKey
         :param url: 服务器URL
@@ -29,13 +34,13 @@ class NetworkApi(object):
         self._url: str = url
         self._http: Session = Session()
 
-    def ping_report(self, job_id: Optional[str], results: List[PingResult]):
+    def ping_report(self, job_id: Optional[str], results: PingForm) -> ReportResp:
         pass
 
-    def speed_report(self, job_id: Optional[str], results: List[SpeedResult]):
+    def speed_report(self, job_id: Optional[str], results: SpeedForm) -> ReportResp:
         pass
 
-    def trace_report(self, job_id: Optional[str], results: List[PingResult]):
+    def trace_report(self, job_id: Optional[str], results: TraceForm) -> ReportResp:
         pass
 
     def server_list(self, form: ServerListForm) -> List[ServerItem]:
