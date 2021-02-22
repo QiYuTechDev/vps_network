@@ -61,7 +61,7 @@ class NetworkApi(object):
         headers = {"Authorization": f"Bearer {self._app_key}"}
         resp = self._http.post(url, json=json, headers=headers)
         if resp.ok:
-            self._log.info(f"上报 Ping 信息成功")
+            self._log.info("上报 Ping 信息成功")
             return ReportResp(**resp.json())
         self._log.error(f"上报 Ping 信息失败: {resp=} {resp.content=}")
         return None
