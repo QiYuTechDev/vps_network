@@ -26,8 +26,8 @@ def init_quick_cli(main: click.Group):
         type=str,
         required=True,
         help="上报数据的APPKey",
-        default=lambda: os.environ.get("VPS_APP_KEY", "").strip(),
-        show_default="VPS_APP_KEY",
+        default=lambda: os.environ.get("BENCH_APP_KEY", "").strip(),
+        show_default="BENCH_APP_KEY",
     )
     @click.option(
         "--job-id",
