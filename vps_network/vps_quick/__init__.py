@@ -11,12 +11,42 @@ import click
 from rich.logging import RichHandler
 
 from ..vps_api import NetworkApi
-from ..vps_api.dt import ServerListForm, PingForm, TraceForm, SpeedForm
+from ..vps_api.dt import ServerListForm, PingForm, TraceForm, SpeedForm, ServerItem
 from ..vps_ping import do_multi_ping
 from ..vps_speed import do_speed_test_wrap
 from ..vps_trace import TraceResult, do_traceroute_v2_wrapper
 
 __all__ = ["init_quick_cli"]
+
+
+def cli_do_speed_test(
+    server_list: List[ServerItem],
+    job_id: Optional[str],
+    api: NetworkApi,
+    speed_disable: Optional[str],
+    log: logging.Logger,
+):
+    # do speed test
+    speed_result = []
+    for item in server_list:
+        if item.speed_test_id is None:
+            continue
+
+        log.info(f"速度测试: {item.name} {item.host}")
+        v = do_speed_test_wrap(server=str(item.speed_test_id), disable=speed_disable)
+        if v is None:
+            log.error(
+                f"速度测试: {item.name}(host={item.host}, id = {item.speed_test_id}) 失败"
+            )
+        else:
+            log.info(f"速度测试: {item.name} 已完成")
+            speed_result.append(v)
+    speed_form = SpeedForm(job_id=job_id, results=speed_result)
+    ret = api.speed_report(speed_form)
+    if ret.errno == 0:
+        log.info("上报速度测试结果成功")
+    else:
+        log.error(f"上报速度测试结果失败: {ret}")
 
 
 def init_quick_cli(main: click.Group):
@@ -136,26 +166,10 @@ def init_quick_cli(main: click.Group):
         else:
             log.error(f"上报 traceroute 结果失败: {ret}")
 
-        # do speed test
-        speed_result = []
-        for item in server_list:
-            if item.speed_test_id is None:
-                continue
-
-            log.info(f"速度测试: {item.name} {item.host}")
-            v = do_speed_test_wrap(
-                server=str(item.speed_test_id), disable=speed_disable
-            )
-            if v is None:
-                log.error(
-                    f"速度测试: {item.name}(host={item.host}, id = {item.speed_test_id}) 失败"
-                )
-            else:
-                log.info(f"速度测试: {item.name} 已完成")
-                speed_result.append(v)
-        speed_form = SpeedForm(job_id=job_id, results=speed_result)
-        ret = api.speed_report(speed_form)
-        if ret.errno == 0:
-            log.info("上报速度测试结果成功")
-        else:
-            log.error(f"上报速度测试结果失败: {ret}")
+        cli_do_speed_test(
+            server_list=server_list,
+            job_id=job_id,
+            api=api,
+            speed_disable=speed_disable,
+            log=log,
+        )
