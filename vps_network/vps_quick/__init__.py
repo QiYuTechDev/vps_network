@@ -19,6 +19,28 @@ from ..vps_trace import TraceResult, do_traceroute_v2_wrapper
 __all__ = ["init_quick_cli"]
 
 
+def cli_do_ping(
+    hosts: List[str],
+    log: logging.Logger,
+    ping_count: int,
+    interval: float,
+    timeout: int,
+    job_id: Optional[str],
+    api: NetworkApi,
+):
+    log.info(f"执行 ping {hosts}....")
+    ping_result = do_multi_ping(
+        hosts, count=ping_count, interval=interval, timeout=timeout
+    )
+
+    ping_form = PingForm(job_id=job_id, results=ping_result)
+    ret = api.ping_report(ping_form)
+    if ret is not None and ret.errno == 0:
+        log.info("上报 Ping 测试信息成功")
+    else:
+        log.error(f"上报 Ping 结果失败: {ret}")
+
+
 def cli_do_trace(
     hosts: List[str],
     trace_count: int,
@@ -29,6 +51,7 @@ def cli_do_trace(
     api: NetworkApi,
     log: logging.Logger,
 ):
+    log.info("开始执行 traceroute ....")
     trace_results: List[TraceResult] = []
     for host in hosts:
         p = do_traceroute_v2_wrapper(
@@ -159,22 +182,19 @@ def init_quick_cli(main: click.Group):
 
         log.info(f"获取服务器列表成功: {server_list}")
 
-        # do ping
         hosts = []
         for item in server_list:
             hosts.append(item.host)
 
-        log.info(f"执行 ping {hosts}....")
-        ping_result = do_multi_ping(
-            hosts, count=ping_count, interval=interval, timeout=timeout
+        cli_do_ping(
+            hosts=hosts,
+            log=log,
+            ping_count=ping_count,
+            interval=interval,
+            timeout=timeout,
+            job_id=job_id,
+            api=api,
         )
-
-        ping_form = PingForm(job_id=job_id, results=ping_result)
-        ret = api.ping_report(ping_form)
-        if ret is not None and ret.errno == 0:
-            log.info("上报 Ping 测试信息成功")
-        else:
-            log.error(f"上报 Ping 结果失败: {ret}")
 
         cli_do_trace(
             hosts=hosts,
