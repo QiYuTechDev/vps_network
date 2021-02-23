@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vps_network"
-version = "0.2.2" # 不要忘记修改 docker/Dockerfile 中的版本
+version = "0.2.3" # 不要忘记修改 docker/Dockerfile 中的版本
 description = "VPS Network Speed Test"
 homepage = "https://vps.qiyutech.tech/"
 authors = ["dev <dev@qiyutech.tech>"]
