@@ -19,6 +19,37 @@ from ..vps_trace import TraceResult, do_traceroute_v2_wrapper
 __all__ = ["init_quick_cli"]
 
 
+def cli_do_trace(
+    hosts: List[str],
+    trace_count: int,
+    interval: float,
+    timeout: int,
+    trace_hops: int,
+    job_id: Optional[str],
+    api: NetworkApi,
+    log: logging.Logger,
+):
+    trace_results: List[TraceResult] = []
+    for host in hosts:
+        p = do_traceroute_v2_wrapper(
+            address=host,
+            count=trace_count,
+            interval=interval,
+            timeout=timeout,
+            max_hops=trace_hops,
+        )
+        if p is None:
+            continue
+        trace_results.append(p)
+
+    trace_form = TraceForm(job_id=job_id, results=trace_results)
+    ret = api.trace_report(trace_form)
+    if ret.errno == 0:
+        log.info("上报 Traceroute 测试信息成功")
+    else:
+        log.error(f"上报 traceroute 结果失败: {ret}")
+
+
 def cli_do_speed_test(
     server_list: List[ServerItem],
     job_id: Optional[str],
@@ -145,26 +176,16 @@ def init_quick_cli(main: click.Group):
         else:
             log.error(f"上报 Ping 结果失败: {ret}")
 
-        # do traceroute
-        trace_results: List[TraceResult] = []
-        for host in hosts:
-            p = do_traceroute_v2_wrapper(
-                address=host,
-                count=trace_count,
-                interval=interval,
-                timeout=timeout,
-                max_hops=trace_hops,
-            )
-            if p is None:
-                continue
-            trace_results.append(p)
-
-        trace_form = TraceForm(job_id=job_id, results=trace_results)
-        ret = api.trace_report(trace_form)
-        if ret.errno == 0:
-            log.info("上报 Traceroute 测试信息成功")
-        else:
-            log.error(f"上报 traceroute 结果失败: {ret}")
+        cli_do_trace(
+            hosts=hosts,
+            trace_count=trace_count,
+            interval=interval,
+            timeout=timeout,
+            trace_hops=trace_hops,
+            job_id=job_id,
+            api=api,
+            log=log,
+        )
 
         cli_do_speed_test(
             server_list=server_list,
