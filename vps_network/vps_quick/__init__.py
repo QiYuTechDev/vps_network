@@ -133,6 +133,9 @@ def init_quick_cli(main: click.Group):
         type=click.Choice(["up", "dl"], case_sensitive=False),
         help="禁止 上传/下载 测试, 不允许同时禁止",
     )
+    @click.option("--no-ping-test", is_flag=True, help="禁止 Ping 测试")
+    @click.option("--no-trace-test", is_flag=True, help="禁止 Traceroute 测试")
+    @click.option("--no-speed-test", is_flag=True, help="禁止 Speed 测试")
     def quick(
         app_key: str,
         job_id: Optional[str],
@@ -144,6 +147,9 @@ def init_quick_cli(main: click.Group):
         interval: float,
         timeout: int,
         speed_disable: Optional[str],
+        no_ping_test: bool,
+        no_trace_test: bool,
+        no_speed_test: bool,
     ):
         """
         VPS 网络快速测试
@@ -186,31 +192,34 @@ def init_quick_cli(main: click.Group):
         for item in server_list:
             hosts.append(item.host)
 
-        cli_do_ping(
-            hosts=hosts,
-            log=log,
-            ping_count=ping_count,
-            interval=interval,
-            timeout=timeout,
-            job_id=job_id,
-            api=api,
-        )
+        if not no_ping_test:
+            cli_do_ping(
+                hosts=hosts,
+                log=log,
+                ping_count=ping_count,
+                interval=interval,
+                timeout=timeout,
+                job_id=job_id,
+                api=api,
+            )
 
-        cli_do_trace(
-            hosts=hosts,
-            trace_count=trace_count,
-            interval=interval,
-            timeout=timeout,
-            trace_hops=trace_hops,
-            job_id=job_id,
-            api=api,
-            log=log,
-        )
+        if not no_trace_test:
+            cli_do_trace(
+                hosts=hosts,
+                trace_count=trace_count,
+                interval=interval,
+                timeout=timeout,
+                trace_hops=trace_hops,
+                job_id=job_id,
+                api=api,
+                log=log,
+            )
 
-        cli_do_speed_test(
-            server_list=server_list,
-            job_id=job_id,
-            api=api,
-            speed_disable=speed_disable,
-            log=log,
-        )
+        if not no_speed_test:
+            cli_do_speed_test(
+                server_list=server_list,
+                job_id=job_id,
+                api=api,
+                speed_disable=speed_disable,
+                log=log,
+            )
