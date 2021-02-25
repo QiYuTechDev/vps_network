@@ -20,4 +20,5 @@ class TraceHop(BaseModel):
 
 
 class TraceResult(BaseModel):
+    host: str = Field(..., title="Trace目标地址")
     results: List[Optional[TraceHop]] = Field(..., title="Trace结果")

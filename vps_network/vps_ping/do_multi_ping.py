@@ -83,7 +83,7 @@ def do_one_ping(
 
     log.info(f"{host} Ping 检测已经完成")
 
-    return PingResult(host=address, count=count, times=times)
+    return PingResult(host=host, count=count, times=times)
 
 
 def do_one_ping_wrapper(**kwargs) -> Optional[PingResult]:

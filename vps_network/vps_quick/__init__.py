@@ -55,7 +55,7 @@ def cli_do_trace(
     trace_results: List[TraceResult] = []
     for host in hosts:
         p = do_traceroute_v2_wrapper(
-            address=host,
+            host=host,
             count=trace_count,
             interval=interval,
             timeout=timeout,

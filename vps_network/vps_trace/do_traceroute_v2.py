@@ -31,7 +31,7 @@ def do_traceroute_v2_wrapper(**kwargs) -> Optional[TraceResult]:
 
 # noinspection PyIncorrectDocstring
 def do_traceroute_v2(
-    address: str,
+    host: str,
     count: int = 2,
     interval: float = 0.05,
     timeout: int = 3,
@@ -47,7 +47,8 @@ def do_traceroute_v2(
 
     参数的含义与: `icmplib.traceroute` 保持一致
     """
-    address = resolve(address)
+
+    address = resolve(host)
 
     if is_ipv6_address(address):
         sock = ICMPv6Socket(source)
@@ -117,4 +118,4 @@ def do_traceroute_v2(
 
     sock.close()
 
-    return TraceResult(results=hops)
+    return TraceResult(results=hops, host=host)
