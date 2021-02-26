@@ -69,15 +69,15 @@ class NetworkApi(object):
         with open(out_file, "w") as fp:
             json.dump(data, fp, ensure_ascii=False)
 
-    def _do_report(self, url: str, json: dict) -> Optional[ReportResp]:
+    def _do_report(self, url: str, json_data: dict) -> Optional[ReportResp]:
         """
         执行上报数据
 
         :param url: 上报的URL
-        :param json: 上报的数据
+        :param json_data: 上报的数据
         """
         headers = {"Authorization": f"Bearer {self._app_key}"}
-        resp = self._http.post(url, json=json, headers=headers)
+        resp = self._http.post(url, json=json_data, headers=headers)
         if resp.ok:
             self._log.info("上报 Ping 信息成功")
             return ReportResp(**resp.json())
