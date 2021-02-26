@@ -11,7 +11,7 @@ import click
 from rich.logging import RichHandler
 
 from ..vps_api import NetworkApi
-from ..vps_api.dt import ServerListForm, PingForm, TraceForm, SpeedForm, ServerItem
+from ..vps_api.dt import ServerListForm, PingForm, TraceForm, SpeedForm
 from ..vps_ping import do_multi_ping
 from ..vps_speed import do_speed_test_wrap, get_cn_server_list, get_oversea_server_list
 from ..vps_trace import TraceResult, do_traceroute_v2_wrapper

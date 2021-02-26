@@ -10,7 +10,7 @@ RUN apt update && apt install -y curl
 RUN curl --proto '=https' -sSf https://sh.rustup.rs | sh -s -- --default-toolchain none -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup toolchain install stable --allow-downgrade --profile minimal
-RUN apt install -y gcc
+RUN apt install -y gcc libssl-dev
 
 RUN mkdir /build
 WORKDIR /build
@@ -37,7 +37,7 @@ COPY --from=BASE /app/dist/* /app/dist/
 # install the vps_network dep
 # this version num may be need change from time to time
 # or we publish vps_network to pypi???
-RUN pip install --no-cache-dir /app/dist/vps_network-0.2.7-py3-none-any.whl
+RUN pip install --no-cache-dir /app/dist/vps_network-0.2.8-py3-none-any.whl
 
 COPY main.py /bin/vps_network
 RUN chmod a+x /bin/vps_network
