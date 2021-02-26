@@ -13,7 +13,7 @@ from rich.logging import RichHandler
 from ..vps_api import NetworkApi
 from ..vps_api.dt import ServerListForm, PingForm, TraceForm, SpeedForm, ServerItem
 from ..vps_ping import do_multi_ping
-from ..vps_speed import do_speed_test_wrap
+from ..vps_speed import do_speed_test_wrap, get_cn_server_list, get_oversea_server_list
 from ..vps_trace import TraceResult, do_traceroute_v2_wrapper
 
 __all__ = ["init_quick_cli"]
@@ -74,27 +74,27 @@ def cli_do_trace(
 
 
 def cli_do_speed_test(
-    server_list: List[ServerItem],
     job_id: Optional[str],
     api: NetworkApi,
     speed_disable: Optional[str],
     log: logging.Logger,
 ):
+    cn_list = get_cn_server_list(None, 8)
+    oversea_list = get_oversea_server_list(None, 8)
+
+    all_list = cn_list + oversea_list
+
     # do speed test
     speed_result = []
-    for item in server_list:
-        if item.speed_test_id is None:
-            continue
-
-        log.info(f"速度测试: {item.name} {item.host}")
-        v = do_speed_test_wrap(server=str(item.speed_test_id), disable=speed_disable)
+    for item in all_list:
+        log.info(f"速度测试: {item.name} {item.sponsor} {item.host}")
+        v = do_speed_test_wrap(server=str(item.id), disable=speed_disable)
         if v is None:
-            log.error(
-                f"速度测试: {item.name}(host={item.host}, id = {item.speed_test_id}) 失败"
-            )
+            log.error(f"速度测试: {item.name}({item.host=}, {item.id=}) 失败")
         else:
             log.info(f"速度测试: {item.name} 已完成")
             speed_result.append(v)
+
     speed_form = SpeedForm(job_id=job_id, results=speed_result)
     ret = api.speed_report(speed_form)
     if ret.errno == 0:
@@ -219,7 +219,6 @@ def init_quick_cli(main: click.Group):
 
         if not no_speed_test:
             cli_do_speed_test(
-                server_list=server_list,
                 job_id=job_id,
                 api=api,
                 speed_disable=speed_disable,
