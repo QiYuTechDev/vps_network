@@ -1,3 +1,4 @@
+import json
 import logging
 import platform
 from threading import Thread
@@ -26,30 +27,47 @@ class NetworkApi(object):
     :doc: https://vps.qiyutech.tech/api/docs
     """
 
-    def __init__(self, app_key: Optional[str] = None, url: Optional[str] = None):
+    def __init__(
+        self,
+        app_key: Optional[str] = None,
+        out_dir: Optional[str] = None,
+        url: Optional[str] = None,
+    ):
         """
         :param app_key: 访问的APPKey
+        :param out_dir: 上报结果到目标目录
         :param url: 服务器URL
         """
         self._app_key: Optional[str] = app_key
+        self._out_dir = out_dir
         self._url: str = SERVER_URL if url is None else url
         self._http: Session = Session()
         self._log = logging.getLogger("rich")
 
     def ping_report(self, form: PingForm) -> Optional[ReportResp]:
+        self._report_to_file("ping.json", form.dict())
+
         url = f"{self._url}/ping"
-        json = form.dict()
-        return self._do_report(url, json)
+        return self._do_report(url, form.dict())
 
     def speed_report(self, form: SpeedForm) -> Optional[ReportResp]:
+        self._report_to_file("speed.json", form.dict())
+
         url = f"{self._url}/speed"
-        json = form.dict()
-        return self._do_report(url, json)
+        return self._do_report(url, form.dict())
 
     def trace_report(self, form: TraceForm) -> Optional[ReportResp]:
+        self._report_to_file("trace.json", form.dict())
+
         url = f"{self._url}/traceroute"
-        json = form.dict()
-        return self._do_report(url, json)
+        return self._do_report(url, form.dict())
+
+    def _report_to_file(self, file_name: str, data: dict):
+        if self._out_dir is None:
+            return
+        out_file = f"{self._out_dir}/{file_name}"
+        with open(out_file, "w") as fp:
+            json.dump(data, fp, ensure_ascii=False)
 
     def _do_report(self, url: str, json: dict) -> Optional[ReportResp]:
         """

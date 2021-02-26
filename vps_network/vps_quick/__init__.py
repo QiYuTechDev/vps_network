@@ -119,6 +119,7 @@ def init_quick_cli(main: click.Group):
         help="测试任务的ID",
         default=lambda: os.environ.get("VPS_JOB_ID", None),
     )
+    @click.option("--out-dir", type=str, help="测试结果写入到目标目录")
     @click.option("--cc", type=str, help="测试目标国家,没有设置则随机选择")
     @click.option("--limit", type=int, help="要测试多少个服务器")
     @click.option("--ping-count", type=int, help="Ping 测试发送数据包的数量", default=8)
@@ -139,6 +140,7 @@ def init_quick_cli(main: click.Group):
     def quick(
         app_key: str,
         job_id: Optional[str],
+        out_dir: Optional[str],
         cc: Optional[str],
         limit: Optional[int],
         ping_count: int,
@@ -168,7 +170,7 @@ def init_quick_cli(main: click.Group):
 
         job_id = None if job_id in ("", None) else job_id.strip()
 
-        api = NetworkApi(app_key)
+        api = NetworkApi(app_key, out_dir=out_dir)
         log.info("开始上报遥测数据")
         api.telemetry()
 
