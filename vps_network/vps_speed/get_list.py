@@ -10,7 +10,12 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from speedtest import Speedtest
 
-__all__ = ["get_server_list", "get_cn_server_list", "ServerInfo"]
+__all__ = [
+    "get_server_list",
+    "get_oversea_server_list",
+    "get_cn_server_list",
+    "ServerInfo",
+]
 
 
 class ServerInfo(BaseModel):
@@ -34,6 +39,19 @@ def get_cn_server_list(
     """
     ret = get_server_list(servers=servers)
     ret = list(filter(lambda x: x.cc.upper() == "CN", ret))
+    if limit is not None:
+        ret = ret[:limit]
+    return ret
+
+
+def get_oversea_server_list(
+    servers: Optional[List[str]] = None, limit: Optional[int] = None
+):
+    """
+    获取海外的服务器列表
+    """
+    ret = get_server_list(servers=servers)
+    ret = list(filter(lambda x: x.cc.upper() != "CN", ret))
     if limit is not None:
         ret = ret[:limit]
     return ret
