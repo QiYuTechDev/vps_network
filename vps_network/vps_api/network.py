@@ -77,7 +77,7 @@ class NetworkApi(object):
         :param json_data: 上报的数据
         """
         headers = {"Authorization": f"Bearer {self._app_key}"}
-        resp = self._http.post(url, json=json_data, headers=headers)
+        resp = self._http.post(url, json=json_data, headers=headers, timeout=5)
         if resp.ok:
             self._log.info("上报 Ping 信息成功")
             return ReportResp(**resp.json())
@@ -89,7 +89,7 @@ class NetworkApi(object):
         获取服务器列表
         """
         url = f"{self._url}/server_list"
-        resp = self._http.post(url, json=form.dict())
+        resp = self._http.post(url, json=form.dict(), timeout=5)
         if resp.ok:
             ret = ServerListResp(**resp.json())
             return ret.servers
@@ -108,7 +108,7 @@ class NetworkApi(object):
         执行上报遥测数据
         """
         url = f"{self._url}/telemetry"
-        json = {
+        j = {
             "info": {
                 "os": platform.system(),
                 "host": platform.node(),
@@ -117,4 +117,4 @@ class NetworkApi(object):
                 "python": platform.python_version(),
             }
         }
-        return self._http.post(url, json=json)
+        return self._http.post(url, json=j, timeout=5)

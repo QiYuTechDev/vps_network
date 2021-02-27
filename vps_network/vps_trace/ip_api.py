@@ -36,11 +36,14 @@ def get_ip_info(ip: str) -> Optional[IPInfo]:
     except ValueError:
         pass
 
-    url = f"http://ip-api.com/json/{ip}?fields={FIELDS}&lang=zh-CN"
-    resp: requests.Response = requests.get(url)
-    if not resp.ok:
+    try:
+        url = f"http://ip-api.com/json/{ip}?fields={FIELDS}&lang=zh-CN"
+        resp: requests.Response = requests.get(url, timeout=5)
+        if not resp.ok:
+            return None
+        info = IPInfo(**resp.json())
+        if not info.is_success():
+            return None
+        return info
+    except requests.Timeout:
         return None
-    info = IPInfo(**resp.json())
-    if not info.is_success():
-        return None
-    return info
