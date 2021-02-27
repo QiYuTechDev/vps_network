@@ -37,7 +37,7 @@ COPY --from=BASE /app/dist/* /app/dist/
 # install the vps_network dep
 # this version num may be need change from time to time
 # or we publish vps_network to pypi???
-RUN pip install --no-cache-dir /app/dist/vps_network-0.2.11-py3-none-any.whl
+RUN pip install --no-cache-dir /app/dist/vps_network-0.2.12-py3-none-any.whl
 
 COPY main.py /bin/vps_network
 RUN chmod a+x /bin/vps_network
