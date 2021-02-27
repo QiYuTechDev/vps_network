@@ -25,6 +25,6 @@ run-test:
 	sudo poetry run pytest vps_network
 
 
-run-quick:export VPS_APP_KEY=$(shell cat app_key.txt)
+run-quick:export BENCH_APP_KEY=$(shell cat app_key.txt)
 run-quick:
 	sudo -E poetry run python main.py quick

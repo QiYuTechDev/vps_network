@@ -1,3 +1,4 @@
+import ipaddress
 from functools import lru_cache
 from typing import Optional
 
@@ -26,8 +27,15 @@ class IPInfo(BaseModel):
         return self.status == "success"
 
 
-@lru_cache(maxsize=255)  # add lru cache to prevent hit rate limit
+@lru_cache(maxsize=64 * 1024)  # add lru cache to prevent hit rate limit
 def get_ip_info(ip: str) -> Optional[IPInfo]:
+    try:
+        ip_a: ipaddress.IPv4Address = ipaddress.ip_address(ip)
+        if ip_a.is_private:  # private address is ignored (MUST BE NO ANSWER)
+            return None
+    except ValueError:
+        pass
+
     url = f"http://ip-api.com/json/{ip}?fields={FIELDS}&lang=zh-CN"
     resp: requests.Response = requests.get(url)
     if not resp.ok:

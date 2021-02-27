@@ -75,7 +75,7 @@ def do_one_ping(
                 sleep(interval)
 
         except ICMPLibError as e:
-            log.error(f"接受 {host} Ping 返回信息失败: {e}")
+            log.error(f"接收 {host} Ping 返回信息失败: {e}")
 
     progress.remove_task(task_id=task_id)
 

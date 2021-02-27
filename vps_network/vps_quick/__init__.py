@@ -11,9 +11,14 @@ import click
 from rich.logging import RichHandler
 
 from ..vps_api import NetworkApi
-from ..vps_api.dt import ServerListForm, PingForm, TraceForm, SpeedForm
+from ..vps_api.dt import PingForm, TraceForm, SpeedForm
 from ..vps_ping import do_multi_ping
-from ..vps_speed import do_speed_test_wrap, get_cn_server_list, get_oversea_server_list
+from ..vps_speed import (
+    do_speed_test_wrap,
+    get_cn_server_list,
+    get_oversea_server_list,
+    ServerInfo,
+)
 from ..vps_trace import TraceResult, do_traceroute_v2_wrapper
 
 __all__ = ["init_quick_cli"]
@@ -74,15 +79,13 @@ def cli_do_trace(
 
 
 def cli_do_speed_test(
+    server_list: List[ServerInfo],
     job_id: Optional[str],
     api: NetworkApi,
     speed_disable: Optional[str],
     log: logging.Logger,
 ):
-    cn_list = get_cn_server_list(None, 8)
-    oversea_list = get_oversea_server_list(None, 8)
-
-    all_list = cn_list + oversea_list
+    all_list = server_list
 
     # do speed test
     speed_result = []
@@ -175,14 +178,10 @@ def init_quick_cli(main: click.Group):
         api.telemetry()
 
         # get server list
-        form = (
-            ServerListForm(cc=cc)
-            if limit is None
-            else ServerListForm(cc=cc, limit=limit)
-        )
-
         log.info("开始获取服务器列表...")
-        server_list = api.server_list(form)
+        cn_list = get_cn_server_list(None, 8)
+        oversea_list = get_oversea_server_list(None, 8)
+        server_list = cn_list + oversea_list
 
         if len(server_list) == 0:
             log.error("获取服务器列表失败")
@@ -192,7 +191,7 @@ def init_quick_cli(main: click.Group):
 
         hosts = []
         for item in server_list:
-            hosts.append(item.host)
+            hosts.append(item.host.split(":")[0])
 
         if not no_ping_test:
             cli_do_ping(
@@ -219,6 +218,7 @@ def init_quick_cli(main: click.Group):
 
         if not no_speed_test:
             cli_do_speed_test(
+                server_list=server_list,
                 job_id=job_id,
                 api=api,
                 speed_disable=speed_disable,
