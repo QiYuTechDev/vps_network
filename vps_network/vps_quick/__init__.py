@@ -17,6 +17,7 @@ from ..vps_speed import (
     do_speed_test_wrap,
     get_cn_server_list,
     get_oversea_server_list,
+    get_cc_server_list,
     ServerInfo,
 )
 from ..vps_trace import TraceResult, do_traceroute_v2_wrapper
@@ -25,7 +26,7 @@ __all__ = ["init_quick_cli"]
 
 
 def cli_do_ping(
-    hosts: List[str],
+    hosts: dict,  # dict of ip to CC
     log: logging.Logger,
     ping_count: int,
     interval: float,
@@ -33,7 +34,7 @@ def cli_do_ping(
     job_id: Optional[str],
     api: NetworkApi,
 ):
-    log.info(f"执行 ping {hosts}....")
+    log.info(f"ping 测试 {hosts}....")
     ping_result = do_multi_ping(
         hosts, count=ping_count, interval=interval, timeout=timeout
     )
@@ -41,7 +42,7 @@ def cli_do_ping(
     ping_form = PingForm(job_id=job_id, results=ping_result)
     ret = api.ping_report(ping_form)
     if ret is not None and ret.errno == 0:
-        log.info("上报 Ping 测试信息成功")
+        log.info("上报 Ping 测试结果成功")
     else:
         log.error(f"上报 Ping 结果失败: {ret}")
 
@@ -56,7 +57,7 @@ def cli_do_trace(
     api: NetworkApi,
     log: logging.Logger,
 ):
-    log.info("开始执行 traceroute ....")
+    log.info(f"开始执行 traceroute {hosts} ...")
     trace_results: List[TraceResult] = []
     for host in hosts:
         p = do_traceroute_v2_wrapper(
@@ -73,7 +74,7 @@ def cli_do_trace(
     trace_form = TraceForm(job_id=job_id, results=trace_results)
     ret = api.trace_report(trace_form)
     if ret.errno == 0:
-        log.info("上报 Traceroute 测试信息成功")
+        log.info("上报 Traceroute 测试结果成功")
     else:
         log.error(f"上报 traceroute 结果失败: {ret}")
 
@@ -123,8 +124,8 @@ def init_quick_cli(main: click.Group):
         default=lambda: os.environ.get("VPS_JOB_ID", None),
     )
     @click.option("--out-dir", type=str, help="测试结果写入到目标目录")
-    @click.option("--cc", type=str, help="测试目标国家,没有设置则随机选择")
-    @click.option("--limit", type=int, help="要测试多少个服务器")
+    @click.option("--cc", type=str, help="测试目标国家,没有设置则随机选择 国内 和 海外")
+    @click.option("--limit", type=int, help="要测试多少个服务器", default=16)
     @click.option("--ping-count", type=int, help="Ping 测试发送数据包的数量", default=8)
     @click.option("--trace-hops", type=int, help="Traceroute 最大跳", default=32)
     @click.option("--trace-count", type=int, help="Traceroute 发送数据包的数量", default=2)
@@ -174,14 +175,15 @@ def init_quick_cli(main: click.Group):
         job_id = None if job_id in ("", None) else job_id.strip()
 
         api = NetworkApi(app_key, out_dir=out_dir)
-        log.info("开始上报遥测数据")
-        api.telemetry()
 
         # get server list
         log.info("开始获取服务器列表...")
-        cn_list = get_cn_server_list(None, 8)
-        oversea_list = get_oversea_server_list(None, 8)
-        server_list = cn_list + oversea_list
+        if cc is None:
+            cn_list = get_cn_server_list(None, limit)
+            oversea_list = get_oversea_server_list(None, limit)
+            server_list = cn_list + oversea_list
+        else:
+            server_list = get_cc_server_list(cc, limit)
 
         if len(server_list) == 0:
             log.error("获取服务器列表失败")
@@ -189,13 +191,13 @@ def init_quick_cli(main: click.Group):
 
         log.info(f"获取服务器列表成功: {server_list}")
 
-        hosts = []
+        host_cc_dict = dict()
         for item in server_list:
-            hosts.append(item.host.split(":")[0])
+            host_cc_dict[item.host.split(":")[0]] = item.cc
 
         if not no_ping_test:
             cli_do_ping(
-                hosts=hosts,
+                hosts=host_cc_dict,
                 log=log,
                 ping_count=ping_count,
                 interval=interval,
@@ -203,6 +205,10 @@ def init_quick_cli(main: click.Group):
                 job_id=job_id,
                 api=api,
             )
+
+        hosts = []
+        for item in server_list:
+            hosts.append(item.host.split(":")[0])
 
         if not no_trace_test:
             cli_do_trace(

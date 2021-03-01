@@ -7,6 +7,7 @@ __all__ = ["PingResult"]
 
 class PingResult(BaseModel):
     host: str = Field(..., title="目的服务器", description="从本机Ping的目的服务器")
+    cc: str = Field(None, title="国家编码", description="目标服务器所在的国家编码")
     count: int = Field(..., title="请求次数", description="一共发送了多少次请求")
     times: List[float] = Field(
         ...,

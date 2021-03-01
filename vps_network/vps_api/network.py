@@ -1,10 +1,8 @@
 import json
 import logging
-import platform
-from threading import Thread
 from typing import Optional, List
 
-from requests import Session, Response
+from requests import Session
 
 from .dt import (
     ServerListResp,
@@ -94,27 +92,3 @@ class NetworkApi(object):
             ret = ServerListResp(**resp.json())
             return ret.servers
         return []
-
-    def telemetry(self) -> Thread:
-        """
-        上报遥测数据
-        """
-        th = Thread(target=self.do_telemetry, name="telemetry")
-        th.start()
-        return th
-
-    def do_telemetry(self) -> Response:
-        """
-        执行上报遥测数据
-        """
-        url = f"{self._url}/telemetry"
-        j = {
-            "info": {
-                "os": platform.system(),
-                "host": platform.node(),
-                "os-ver": platform.release(),
-                "processor": platform.processor(),
-                "python": platform.python_version(),
-            }
-        }
-        return self._http.post(url, json=j, timeout=5)

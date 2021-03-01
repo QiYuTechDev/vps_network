@@ -27,7 +27,7 @@ def init_ping_cli(main: click.Group):
 
         例如: single www.baidu.com
         """
-        results = do_multi_ping([host])
+        results = do_multi_ping({host: None})
         print_ping_results(results)
 
     @ping.command()
@@ -38,5 +38,6 @@ def init_ping_cli(main: click.Group):
 
         例如: multi --host www.baidu.com --host www.google.com
         """
-        results = do_multi_ping(host)
+
+        results = do_multi_ping({h: None for h in host})
         print_ping_results(results)

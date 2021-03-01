@@ -18,7 +18,7 @@ run-speed-test-list:
 	$(pyRun) speedtest list
 
 run-traceroute:
-	sudo $(pyRun) traceroute --host www.qq.com --host www.linode.com
+	sudo $(pyRun) traceroute --host www.qq.com
 
 
 run-test:
@@ -27,4 +27,6 @@ run-test:
 
 run-quick:export BENCH_APP_KEY=$(shell cat app_key.txt)
 run-quick:
-	sudo -E poetry run python main.py quick
+	rm -rf out_dir
+	mkdir -p out_dir
+	sudo -E poetry run python main.py quick --out-dir=out_dir

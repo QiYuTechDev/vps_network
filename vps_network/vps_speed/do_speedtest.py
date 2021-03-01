@@ -2,7 +2,7 @@
 这个脚本包装了 Speed Test Cli
 github: https://github.com/sivel/speedtest-cli/wiki
 
-之后应该迁移到自建的 SpeedTest 工具上
+之后应该迁移到自建的测速工具上
 """
 
 import logging

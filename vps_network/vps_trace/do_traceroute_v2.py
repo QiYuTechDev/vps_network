@@ -57,14 +57,14 @@ def do_traceroute_v2(
 
     ttl = first_hop
     host_reached = False
-    hops: List[Optional[TraceHop]] = []
+    hops: List[TraceHop] = []
 
     while not host_reached and ttl <= max_hops:
         hop_address = None
         packets_sent = 0
         packets_received = 0
 
-        times: List[Optional[float]] = []
+        times: List[float] = []
 
         for sequence in range(count):
             request = ICMPRequest(
@@ -84,7 +84,6 @@ def do_traceroute_v2(
                 sleep(interval)
 
             except ICMPLibError:
-                times.append(None)
                 continue
 
             assert reply is not None
@@ -100,19 +99,15 @@ def do_traceroute_v2(
                 break
 
         if packets_received:
-
             ip_info = get_ip_info(hop_address)
 
+            info = ip_info.dict() if ip_info is not None else dict()
+
             hop = TraceHop(
-                ip=hop_address,
-                times=times,
-                info=ip_info.dict() if ip_info is not None else dict(),
+                ip=hop_address, distance=ttl, count=count, times=times, info=info
             )
 
             hops.append(hop)
-
-        else:
-            hops.append(None)
 
         ttl += 1
 

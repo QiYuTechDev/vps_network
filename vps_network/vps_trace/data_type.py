@@ -13,12 +13,16 @@ class TraceHop(BaseModel):
     """
 
     ip: str = Field(..., title="IP地址")
-    # rtt times
-    times: List[Optional[float]] = Field(..., title="RTT时间", description="没有则表示没有收到回复")
-    # any other ip information
-    info: Optional[dict] = Field(None, title="其他信息")
+    distance: int = Field(..., title="距离", description="当距离有跳跃的时候，说明中间有的地址被忽略")
+    count: int = Field(..., title="请求数量", description="发送了多少个请求")
+    times: List[float] = Field(
+        ..., title="RTT时间", description="count - len(times)表示丢失的数量"
+    )
+    info: Optional[dict] = Field(
+        None, title="IP信息", description="IP 信息，有可能获取失败，或者不存在(IP 地址为内网)"
+    )
 
 
 class TraceResult(BaseModel):
     host: str = Field(..., title="Trace目标地址")
-    results: List[Optional[TraceHop]] = Field(..., title="Trace结果")
+    results: List[TraceHop] = Field(..., title="Trace结果")

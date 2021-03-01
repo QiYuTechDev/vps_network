@@ -8,6 +8,7 @@ from .get_list import (
     get_server_list,
     get_cn_server_list,
     get_oversea_server_list,
+    get_cc_server_list,
     ServerInfo,
 )
 from .utils import print_server_list, print_speed_test_result
@@ -18,6 +19,7 @@ __all__ = [
     "do_speed_test_wrap",
     "get_cn_server_list",
     "get_oversea_server_list",
+    "get_cc_server_list",
     "SpeedResult",
     "SpeedServer",
     "SpeedClient",

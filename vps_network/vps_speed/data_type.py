@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -11,7 +11,7 @@ class SpeedServer(BaseModel):
     lon: str = Field(..., title="纬度")
     name: str = Field(..., title="名称")
     country: str = Field(..., title="国家")
-    cc: str = Field(..., title="")
+    cc: str = Field(..., title="国家代码", description="国家代码的缩写")
     sponsor: str = Field(..., title="贡献者")
     id: str = Field(..., title="服务器ID")
     host: str = Field(..., title="服务器地址")
@@ -33,12 +33,11 @@ class SpeedClient(BaseModel):
 
 
 class SpeedResult(BaseModel):
-    download: float = Field(..., title="下载速度")
-    upload: float = Field(..., title="上传速度")
+    download: float = Field(..., title="下载速度", description="注意单位是: bit 不是字节")
+    upload: float = Field(..., title="上传速度", description="注意单位是: bit 不是字节")
     ping: float = Field(..., title="ping")
     server: SpeedServer = Field(..., title="服务器")
-    timestamp: str = Field(..., title="时间")
+    timestamp: str = Field(..., title="时间", description="RFC3389 时间字符串")
     bytes_sent: Optional[int] = Field(None, title="发送字节")
     bytes_received: Optional[int] = Field(None, title="接受字节")
-    share: Optional[Any] = Field(None, title="分享")
     client: SpeedClient = Field(..., title="客户端信息")

@@ -22,6 +22,7 @@ __all__ = ["do_multi_ping", "do_one_ping"]
 def do_one_ping(
     host,
     progress: Progress,
+    cc: Optional[str] = None,
     seq_offset=0,
     count=8,
     interval=0.1,
@@ -83,7 +84,7 @@ def do_one_ping(
 
     log.info(f"{host} Ping 检测已经完成")
 
-    return PingResult(host=host, count=count, times=times)
+    return PingResult(host=host, cc=cc, count=count, times=times)
 
 
 def do_one_ping_wrapper(**kwargs) -> Optional[PingResult]:
@@ -96,7 +97,7 @@ def do_one_ping_wrapper(**kwargs) -> Optional[PingResult]:
 
 
 def do_multi_ping(
-    hosts: List[str], count: int = 8, interval: float = 0.01, timeout: int = 2
+    hosts: dict, count: int = 8, interval: float = 0.01, timeout: int = 2
 ) -> List[PingResult]:
     pool = ThreadPoolExecutor(thread_name_prefix="ping")
 
@@ -108,11 +109,14 @@ def do_multi_ping(
         transient=True,
     ) as progress:
         jobs = []
-        for idx in range(len(hosts)):
+        offset = 0
+        for host, cc in hosts.items():
+            offset += 1
             job = pool.submit(
                 do_one_ping_wrapper,
-                seq_offset=idx * len(hosts) * 2,
-                host=hosts[idx],
+                seq_offset=offset * len(hosts) * count,
+                host=host,
+                cc=cc,
                 count=count,
                 interval=interval,
                 timeout=timeout,

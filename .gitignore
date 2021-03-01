@@ -3,6 +3,7 @@ app_key.txt
 demo.json
 poetry.lock
 node_modules
+out_dir
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

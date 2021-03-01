@@ -5,6 +5,7 @@ github: https://github.com/sivel/speedtest-cli/wiki
 之后应该迁移到自建的 SpeedTest 工具上
 """
 
+import random
 from typing import Optional, List
 
 from pydantic import BaseModel, Field
@@ -14,6 +15,7 @@ __all__ = [
     "get_server_list",
     "get_oversea_server_list",
     "get_cn_server_list",
+    "get_cc_server_list",
     "ServerInfo",
 ]
 
@@ -57,6 +59,17 @@ def get_oversea_server_list(
     return ret
 
 
+def get_cc_server_list(cc: str, limit: Optional[int] = None):
+    """
+    获取指定国家的测速节点
+    """
+    ret = get_server_list()
+    ret = list(filter(lambda x: x.cc.upper() == cc.upper(), ret))
+    if limit is not None:
+        ret = ret[:limit]
+    return ret
+
+
 def get_server_list(servers: Optional[List[str]] = None) -> List[ServerInfo]:
     """
     进行 SpeedTest 测试
@@ -71,4 +84,5 @@ def get_server_list(servers: Optional[List[str]] = None) -> List[ServerInfo]:
     ret = []
     for key, value in servers.items():
         ret += value
+    random.shuffle(ret)  # ensure we keep some random
     return list(map(lambda x: ServerInfo(**x), ret))
