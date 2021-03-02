@@ -9,13 +9,7 @@
 
 网络速度测试工具箱
 
-## 警告
-
-    这是一款商业软件，使用之前请联系开发人员获取授权(admin@qiyutech.tech)
-    个人允许免费使用(仅允许用来测试属于自己的机器，并且不允许分享测试结果给第三方)。
-    禁止复刻(Fork)。
-
 ## 文档 & 博客
 
-[文档](https://oss.qiyutech.tech/vps_bench/index.html)
-[发布记录](https://blog.qiyutech.tech/202102/28_bench_tool/)
+* [文档](https://oss.qiyutech.tech/vps_bench/index.html)
+* [发布记录](https://blog.qiyutech.tech/202102/28_bench_tool/)
