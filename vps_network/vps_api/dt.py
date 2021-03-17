@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+from ..vps_php import PhpCompileResult
 from ..vps_ping import PingResult
 from ..vps_speed import SpeedResult
 from ..vps_trace import TraceResult
@@ -14,6 +15,7 @@ __all__ = [
     "SpeedForm",
     "TraceForm",
     "ReportResp",
+    "PhpForm",
 ]
 
 
@@ -46,6 +48,10 @@ class ReportBaseForm(BaseModel):
 
 class PingForm(ReportBaseForm):
     results: List[PingResult] = Field(..., title="Ping测试结果")
+
+
+class PhpForm(ReportBaseForm):
+    result: PhpCompileResult = Field(..., title="PHP编译结果")
 
 
 class SpeedForm(ReportBaseForm):

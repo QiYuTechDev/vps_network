@@ -30,3 +30,17 @@ run-quick:
 	rm -rf out_dir
 	mkdir -p out_dir
 	sudo -E poetry run python main.py quick --out-dir=out_dir
+
+
+docker-build-release:
+	docker build -f docker/Dockerfile       -t vps_bench_release:latest .
+
+# release without vps_bench
+docker-build-vps-network:
+	docker build -f docker/vps_network.Dockerfile -t vps_bench_network:latest .
+
+docker-build-nginx:
+	docker build -f docker/nginx.Dockerfile -t vps_bench_nginx:latest    docker
+
+docker-build-php:
+	docker build -f docker/php.Dockerfile   -t vps_bench_php:latest      docker

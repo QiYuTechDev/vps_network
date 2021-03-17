@@ -1,110 +1,27 @@
 """
-快速测试 ping, traceroute, speed
+快速进行测试
 """
 
 import logging
 import os
 import sys
-from typing import Optional, List
+from typing import Optional
 
 import click
 from rich.logging import RichHandler
 
+from .cli_php_test import cli_php_test
+from .cli_ping_test import cli_do_ping
+from .cli_speed_test import cli_do_speed_test
+from .cli_trace_test import cli_do_trace
 from ..vps_api import NetworkApi
-from ..vps_api.dt import PingForm, TraceForm, SpeedForm
-from ..vps_ping import do_multi_ping
 from ..vps_speed import (
-    do_speed_test_wrap,
     get_cn_server_list,
     get_oversea_server_list,
     get_cc_server_list,
-    ServerInfo,
 )
-from ..vps_trace import TraceResult, do_traceroute_v2_wrapper
 
 __all__ = ["init_quick_cli"]
-
-
-def cli_do_ping(
-    hosts: dict,  # dict of ip to CC
-    log: logging.Logger,
-    ping_count: int,
-    interval: float,
-    timeout: int,
-    job_id: Optional[str],
-    api: NetworkApi,
-):
-    log.info(f"ping 测试 {hosts}....")
-    ping_result = do_multi_ping(
-        hosts, count=ping_count, interval=interval, timeout=timeout
-    )
-
-    ping_form = PingForm(job_id=job_id, results=ping_result)
-    ret = api.ping_report(ping_form)
-    if ret is not None and ret.errno == 0:
-        log.info("上报 Ping 测试结果成功")
-    else:
-        log.error(f"上报 Ping 结果失败: {ret}")
-
-
-def cli_do_trace(
-    hosts: List[str],
-    trace_count: int,
-    interval: float,
-    timeout: int,
-    trace_hops: int,
-    job_id: Optional[str],
-    api: NetworkApi,
-    log: logging.Logger,
-):
-    log.info(f"开始执行 traceroute {hosts} ...")
-    trace_results: List[TraceResult] = []
-    for host in hosts:
-        p = do_traceroute_v2_wrapper(
-            host=host,
-            count=trace_count,
-            interval=interval,
-            timeout=timeout,
-            max_hops=trace_hops,
-        )
-        if p is None:
-            continue
-        trace_results.append(p)
-
-    trace_form = TraceForm(job_id=job_id, results=trace_results)
-    ret = api.trace_report(trace_form)
-    if ret.errno == 0:
-        log.info("上报 Traceroute 测试结果成功")
-    else:
-        log.error(f"上报 traceroute 结果失败: {ret}")
-
-
-def cli_do_speed_test(
-    server_list: List[ServerInfo],
-    job_id: Optional[str],
-    api: NetworkApi,
-    speed_disable: Optional[str],
-    log: logging.Logger,
-):
-    all_list = server_list
-
-    # do speed test
-    speed_result = []
-    for item in all_list:
-        log.info(f"速度测试: {item.name} {item.sponsor} {item.host}")
-        v = do_speed_test_wrap(server=str(item.id), disable=speed_disable)
-        if v is None:
-            log.error(f"速度测试: {item.name}({item.host=}, {item.id=}) 失败")
-        else:
-            log.info(f"速度测试: {item.name} 已完成")
-            speed_result.append(v)
-
-    speed_form = SpeedForm(job_id=job_id, results=speed_result)
-    ret = api.speed_report(speed_form)
-    if ret.errno == 0:
-        log.info("上报速度测试结果成功")
-    else:
-        log.error(f"上报速度测试结果失败: {ret}")
 
 
 def init_quick_cli(main: click.Group):
@@ -138,9 +55,10 @@ def init_quick_cli(main: click.Group):
         type=click.Choice(["up", "dl"], case_sensitive=False),
         help="禁止 上传/下载 测试, 不允许同时禁止",
     )
-    @click.option("--no-ping-test", is_flag=True, help="禁止 Ping 测试")
-    @click.option("--no-trace-test", is_flag=True, help="禁止 Traceroute 测试")
-    @click.option("--no-speed-test", is_flag=True, help="禁止 Speed 测试")
+    @click.option("--no-ping-test", is_flag=True, help="不进行 Ping 测试")
+    @click.option("--no-trace-test", is_flag=True, help="不进行 Traceroute 测试")
+    @click.option("--no-speed-test", is_flag=True, help="不进行 Speed 测试")
+    @click.option("--no-php", is_flag=True, help="不进行 php 测试")
     def quick(
         app_key: str,
         job_id: Optional[str],
@@ -156,6 +74,7 @@ def init_quick_cli(main: click.Group):
         no_ping_test: bool,
         no_trace_test: bool,
         no_speed_test: bool,
+        no_php: bool,
     ):
         """
         VPS 网络快速测试
@@ -230,3 +149,6 @@ def init_quick_cli(main: click.Group):
                 speed_disable=speed_disable,
                 log=log,
             )
+
+        if not no_php:
+            cli_php_test(api=api, job_id=job_id)

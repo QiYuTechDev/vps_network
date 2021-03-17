@@ -4,24 +4,6 @@
 # Rust Build Docker Image
 FROM python:3.9 as BASE
 
-# 安装 git
-RUN apt update && apt install -y git
-
-# install rust
-RUN apt update && apt install -y curl
-RUN curl --proto '=https' -sSf https://sh.rustup.rs | sh -s -- --default-toolchain none -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN rustup toolchain install stable --allow-downgrade --profile minimal
-RUN apt install -y gcc libssl-dev
-
-RUN mkdir /build
-WORKDIR /build
-
-# download & build VPS Bench 工具
-RUN git clone https://github.com/QiYuTechDev/vps_bench
-
-RUN cd /build/vps_bench && cargo build --release
-
 # install poetry
 COPY . /app
 WORKDIR /app
@@ -65,7 +47,6 @@ FROM python:3.9
 MAINTAINER dev@qiyutech.tech
 
 # copy vps_bench to bin dir
-COPY --from=BASE  /build/vps_bench/target/release/vps_bench /bin/
 COPY --from=BASE  /app/dist/*                               /app/dist/
 COPY --from=NGINX /usr/local/nginx                          /user/local
 COPY --from=PHP   /php/php-8.0.3.tar.gz                     /php/

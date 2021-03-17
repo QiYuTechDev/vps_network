@@ -12,6 +12,7 @@ from .dt import (
     SpeedForm,
     TraceForm,
     ReportResp,
+    PhpForm,
 )
 from ..values import SERVER_URL
 
@@ -41,6 +42,11 @@ class NetworkApi(object):
         self._url: str = SERVER_URL if url is None else url
         self._http: Session = Session()
         self._log = logging.getLogger("rich")
+
+    def php_report(self, form: PhpForm) -> Optional[ReportResp]:
+        self._report_to_file("php.json", form.dict())
+        url = f"{self._url}/php"
+        return self._do_report(url, form.dict())
 
     def ping_report(self, form: PingForm) -> Optional[ReportResp]:
         self._report_to_file("ping.json", form.dict())

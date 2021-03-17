@@ -1,0 +1,20 @@
+.github
+.pytest_cache
+docker
+out_dir
+# scripts
+# vps_network
+.dockerignore
+.editorconfig
+.gitignore
+app_key.txt
+Changelog.rst
+demo.json
+# main.py
+Makefile
+poetry.lock
+pylama.ini
+# pyproject.toml
+# README.md
+# requirements.txt
+todo.rst
