@@ -24,7 +24,7 @@ from ..vps_speed import (
 __all__ = ["init_quick_cli"]
 
 
-def init_quick_cli(main: click.Group):
+def init_quick_cli(main: click.Group):  # noqa
     @main.command()
     @click.option(
         "--app-key",
