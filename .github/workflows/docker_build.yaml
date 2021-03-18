@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.ALI_USERNAME }}
           password: ${{ secrets.ALI_TOKEN }}
 
-      - name: Build and push
+      - name: Docker Build
         uses: docker/build-push-action@v2
         with:
           context: ./${{ env.BUILD_DIR }}
