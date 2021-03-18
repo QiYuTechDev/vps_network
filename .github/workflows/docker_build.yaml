@@ -1,4 +1,4 @@
-name: docker build
+name: docker build and test
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     env:
-      IMAGE_NAME: vps_bench:${{ github.event.release.tag_name }}
+      IMAGE_NAME: vps_bench:latest
       BUILD_DIR: .
 
     runs-on: ubuntu-20.04
@@ -49,3 +49,10 @@ jobs:
           context: ./${{ env.BUILD_DIR }}
           file: ./docker/Dockerfile
           push: false
+          tags: |
+            qiyutech/${{ env.IMAGE_NAME }}
+
+      - name: Run Docker Test
+        run: |
+          git clone https://github.com/QiYuTechDev/vps_compose
+          cd vps_compose && mv -f latest.Dockerfile Dockerfile && docker-compose up
