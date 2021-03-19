@@ -45,7 +45,7 @@ class NetworkApi(object):
 
     def php_report(self, form: PhpForm) -> Optional[ReportResp]:
         self._report_to_file("php.json", form.dict())
-        url = f"{self._url}/php"
+        url = f"https://vps.qiyutech.tech/api/bench/v1/php"  # todo fix this
         return self._do_report(url, form.dict())
 
     def ping_report(self, form: PingForm) -> Optional[ReportResp]:
