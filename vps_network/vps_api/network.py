@@ -83,9 +83,9 @@ class NetworkApi(object):
         headers = {"Authorization": f"Bearer {self._app_key}"}
         resp = self._http.post(url, json=json_data, headers=headers, timeout=5)
         if resp.ok:
-            self._log.info("上报 Ping 信息成功")
+            self._log.info("上报信息成功")
             return ReportResp(**resp.json())
-        self._log.error(f"上报 Ping 信息失败: {resp=} {resp.content=}")
+        self._log.error(f"上报信息失败: {resp=} {resp.content=}")
         return None
 
     def server_list(self, form: ServerListForm) -> List[ServerItem]:
