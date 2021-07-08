@@ -1,6 +1,7 @@
 .github
 .pytest_cache
 docker
+docs
 out_dir
 # scripts
 # vps_network
@@ -17,4 +18,3 @@ pylama.ini
 # pyproject.toml
 # README.md
 # requirements.txt
-todo.rst

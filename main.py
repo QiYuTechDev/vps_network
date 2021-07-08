@@ -4,7 +4,7 @@ import click
 
 
 @click.group("main")
-@click.version_option("v0.1.0")
+@click.version_option("v0.3.0")
 def main():
     """
     VPS 网络测试工具箱
