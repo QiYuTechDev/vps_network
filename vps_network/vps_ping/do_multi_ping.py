@@ -43,6 +43,8 @@ def do_one_ping(
     """
 
     address = resolve(host)
+    if isinstance(address, list):
+        address = address[0]
 
     log = logging.getLogger("rich")
 

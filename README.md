@@ -6,6 +6,7 @@
 ![Black Code Format Check](https://github.com/QiYuTechDev/vps_network/workflows/Black%20Code%20Format%20Check/badge.svg)
 ![docker build](https://github.com/QiYuTechDev/vps_network/workflows/docker%20build/badge.svg)
 ![docker release](https://github.com/QiYuTechDev/vps_network/workflows/docker%20release/badge.svg)
+[![CodeFactor](https://www.codefactor.io/repository/github/qiyutechdev/vps_network/badge)](https://www.codefactor.io/repository/github/qiyutechdev/vps_network)
 
 网络速度测试工具箱
 

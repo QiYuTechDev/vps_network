@@ -1,11 +1,15 @@
 FROM python:3.9
 
+# view nginx download url:
+# https://nginx.org/en/download.html
+ARG NGINX_VERSION="nginx-1.20.1"
+
 RUN apt update && apt install -y curl wget
 RUN mkdir /nginx
 WORKDIR /nginx
-RUN wget https://nginx.org/download/nginx-1.18.0.tar.gz
-RUN tar -zxvf nginx-1.18.0.tar.gz
-WORKDIR /nginx/nginx-1.18.0
+RUN wget -q https://nginx.org/download/${NGINX_VERSION}.tar.gz
+RUN tar -zxvf ${NGINX_VERSION}.tar.gz
+WORKDIR /nginx/${NGINX_VERSION}
 RUN ./configure
 RUN make
 RUN make install

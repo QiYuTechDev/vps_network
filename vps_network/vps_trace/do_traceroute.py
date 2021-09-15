@@ -1,3 +1,4 @@
+from statistics import mean
 from time import sleep
 from typing import List, Optional
 
@@ -15,7 +16,7 @@ from icmplib import (
 )
 from rich.table import Table
 
-from .ip_api import get_ip_info
+from ..vps_utils.ip_api import get_ip_info
 
 __all__ = ["do_traceroute"]
 
@@ -41,10 +42,9 @@ def do_traceroute(
     """
     address = resolve(address)
 
-    if is_ipv6_address(address):
-        sock = ICMPv6Socket(source)
-    else:
-        sock = ICMPv4Socket(source)
+    address = address[0] if isinstance(address, list) else address
+
+    sock = ICMPv6Socket(source) if is_ipv6_address(address) else ICMPv4Socket(source)
 
     ttl = first_hop
     host_reached = False
@@ -53,11 +53,8 @@ def do_traceroute(
     while not host_reached and ttl <= max_hops:
         hop_address = None
         packets_sent = 0
-        packets_received = 0
 
-        min_rtt = float("inf")
-        avg_rtt = 0.0
-        max_rtt = 0.0
+        rtts: List[float] = []
 
         for sequence in range(count):
             request = ICMPRequest(
@@ -82,28 +79,17 @@ def do_traceroute(
             assert reply is not None
 
             hop_address = reply.source
-            packets_received += 1
 
             round_trip_time = (reply.time - request.time) * 1000
-            avg_rtt += round_trip_time
-            min_rtt = min(round_trip_time, min_rtt)
-            max_rtt = max(round_trip_time, max_rtt)
+
+            rtts.append(round_trip_time)
 
             if fast:
                 break
 
-        if packets_received:
-            avg_rtt /= packets_received
+        if len(rtts) > 0:
 
-            hop = Hop(
-                address=hop_address,
-                min_rtt=min_rtt,
-                avg_rtt=avg_rtt,
-                max_rtt=max_rtt,
-                packets_sent=packets_sent,
-                packets_received=packets_received,
-                distance=ttl,
-            )
+            hop = Hop(address=hop_address, packets_sent=packets_sent, distance=ttl, rtts=rtts)
 
             hops.append(hop)
             ip_info = get_ip_info(hop.address)
@@ -117,9 +103,9 @@ def do_traceroute(
                 f"{hop.address}",  # 地址
                 position,  # 位置
                 isp,  # ISP
-                f"{hop.min_rtt:.2f}",  # min
-                f"{hop.avg_rtt:.2f}",  # avg
-                f"{hop.max_rtt:.2f}",  # max
+                f"{min(hop.rtts):.2f}",  # min
+                f"{mean(hop.rtts):.2f}",  # avg
+                f"{max(hop.rtts):.2f}",  # max
             )
         else:
             table.add_row("*", "*", "*", "*", "*", "*")
