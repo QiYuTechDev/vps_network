@@ -32,7 +32,7 @@ RUN pip install poetry && poetry build
 # nginx 镜像
 FROM python:3.9 as NGINX
 
-ARG NGINX_VERSION="nginx-1.18.0"
+ARG NGINX_VERSION="nginx-1.20.1"
 
 RUN apt update && apt install -y curl wget
 RUN mkdir /nginx

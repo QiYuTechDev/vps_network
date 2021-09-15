@@ -1,6 +1,8 @@
 FROM python:3.9
 
-ARG NGINX_VERSION="nginx-1.18.0"
+# view nginx download url:
+# https://nginx.org/en/download.html
+ARG NGINX_VERSION="nginx-1.20.1"
 
 RUN apt update && apt install -y curl wget
 RUN mkdir /nginx
