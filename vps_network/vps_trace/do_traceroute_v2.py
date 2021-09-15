@@ -15,7 +15,7 @@ from icmplib import (
 )
 
 from .data_type import TraceHop, TraceResult
-from .ip_api import get_ip_info
+from vps_utils.ip_api import get_ip_info
 
 __all__ = ["do_traceroute_v2", "do_traceroute_v2_wrapper"]
 
