@@ -80,7 +80,7 @@ COPY              ./scripts/php.bash                        /php/php.bash
 
 # install the vps_network dep
 # this version num may be need change from time to time
-RUN pip install --no-cache-dir /app/dist/vps_network-0.5.0-py3-none-any.whl
+RUN pip install --no-cache-dir /app/dist/vps_network-0.6.0-py3-none-any.whl
 
 COPY main.py /bin/vps_network
 RUN chmod a+x            \
