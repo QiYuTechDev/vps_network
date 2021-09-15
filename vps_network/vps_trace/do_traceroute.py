@@ -41,13 +41,10 @@ def do_traceroute(
     参数的含义与: `icmplib.traceroute` 保持一致
     """
     address = resolve(address)
-    if isinstance(address, list):
-        address = address[0]
 
-    if is_ipv6_address(address):
-        sock = ICMPv6Socket(source)
-    else:
-        sock = ICMPv4Socket(source)
+    address = address[0] if isinstance(address, list) else address
+
+    sock = ICMPv6Socket(source) if is_ipv6_address(address) else ICMPv4Socket(source)
 
     ttl = first_hop
     host_reached = False
@@ -92,12 +89,7 @@ def do_traceroute(
 
         if len(rtts) > 0:
 
-            hop = Hop(
-                address=hop_address,
-                packets_sent=packets_sent,
-                distance=ttl,
-                rtts=rtts,
-            )
+            hop = Hop(address=hop_address, packets_sent=packets_sent, distance=ttl, rtts=rtts)
 
             hops.append(hop)
             ip_info = get_ip_info(hop.address)
