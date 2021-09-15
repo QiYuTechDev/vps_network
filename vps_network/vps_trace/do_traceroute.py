@@ -16,7 +16,7 @@ from icmplib import (
 )
 from rich.table import Table
 
-from vps_utils.ip_api import get_ip_info
+from ..vps_utils.ip_api import get_ip_info
 
 __all__ = ["do_traceroute"]
 

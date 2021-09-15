@@ -15,7 +15,7 @@ from icmplib import (
 )
 
 from .data_type import TraceHop, TraceResult
-from vps_utils.ip_api import get_ip_info
+from ..vps_utils.ip_api import get_ip_info
 
 __all__ = ["do_traceroute_v2", "do_traceroute_v2_wrapper"]
 
@@ -49,6 +49,8 @@ def do_traceroute_v2(
     """
 
     address = resolve(host)
+    if isinstance(address, list):
+        address = address[0]
 
     if is_ipv6_address(address):
         sock = ICMPv6Socket(source)
