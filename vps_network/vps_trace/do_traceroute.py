@@ -40,6 +40,8 @@ def do_traceroute(
     参数的含义与: `icmplib.traceroute` 保持一致
     """
     address = resolve(address)
+    if isinstance(address, list):
+        address = address[0]
 
     if is_ipv6_address(address):
         sock = ICMPv6Socket(source)
