@@ -37,7 +37,7 @@ ARG NGINX_VERSION="nginx-1.20.1"
 RUN apt update && apt install -y curl wget
 RUN mkdir /nginx
 WORKDIR /nginx
-RUN wget https://nginx.org/download/${NGINX_VERSION}.tar.gz
+RUN wget -q https://nginx.org/download/${NGINX_VERSION}.tar.gz
 RUN tar -zxvf ${NGINX_VERSION}.tar.gz
 WORKDIR /nginx/${NGINX_VERSION}
 RUN ./configure
@@ -59,7 +59,7 @@ ARG PHP_VERSION="php-8.0.10"
 RUN apt update && apt install -y curl wget
 RUN mkdir /php
 WORKDIR /php
-RUN wget https://www.php.net/distributions/${PHP_VERSION}.tar.gz
+RUN wget -q https://www.php.net/distributions/${PHP_VERSION}.tar.gz
 
 
 ########################################
