@@ -89,7 +89,9 @@ def do_traceroute(
 
         if len(rtts) > 0:
 
-            hop = Hop(address=hop_address, packets_sent=packets_sent, distance=ttl, rtts=rtts)
+            hop = Hop(
+                address=hop_address, packets_sent=packets_sent, distance=ttl, rtts=rtts
+            )
 
             hops.append(hop)
             ip_info = get_ip_info(hop.address)
